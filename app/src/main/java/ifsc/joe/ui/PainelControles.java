@@ -54,6 +54,7 @@ public class PainelControles {
         configurarBotoesMovimento();
         configurarBotoesCriacao();
         configurarBotaoAtaque();
+        configurarRadioButtons();
     }
 
     /**
@@ -103,17 +104,47 @@ public class PainelControles {
     }
 
     /**
+     * Configura os listeners dos radio buttons para habilitar/desabilitar o botão de ataque.
+     * Aldeões não podem atacar, então o botão é desabilitado quando selecionado.
+     */
+    private void configurarRadioButtons() {
+        // Listener para desabilitar ataque quando Aldeão estiver selecionado
+        aldeaoRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
+        arqueiroRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
+        cavaleiroRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
+        todosRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
+        
+        // Configura estado inicial (Aldeão começa selecionado por padrão)
+        atualizarEstadoBotaoAtaque();
+    }
+
+    /**
+     * Atualiza o estado do botão de ataque baseado no radio button selecionado.
+     * Desabilita o botão quando Aldeão estiver selecionado, pois aldeões não atacam.
+     */
+    private void atualizarEstadoBotaoAtaque() {
+        boolean aldeaoSelecionado = aldeaoRadioButton.isSelected();
+        atacarButton.setEnabled(!aldeaoSelecionado);
+        
+        // Atualiza o tooltip para informar o usuário
+        if (aldeaoSelecionado) {
+            atacarButton.setToolTipText("Aldeões não podem atacar");
+        } else {
+            atacarButton.setToolTipText("Atacar personagens no alcance");
+        }
+    }
+
+    /**
      * Faz os personagens atacarem baseado no tipo selecionado nos radio buttons.
+     * Nota: Aldeões não atacam, então essa opção não é chamada para eles.
      */
     private void atacarPorTipoSelecionado() {
-        if (aldeaoRadioButton.isSelected()) {
-            getTela().atacarAldeoes();
-        } else if (arqueiroRadioButton.isSelected()) {
+        if (arqueiroRadioButton.isSelected()) {
             getTela().atacarArqueiros();
         } else if (cavaleiroRadioButton.isSelected()) {
             getTela().atacarCavaleiros();
         } else {
-            // Por padrão (ou se "Todos" estiver selecionado), ataca todos
+            // Por padrão (ou se "Todos" estiver selecionado), ataca todos (exceto aldeões)
             getTela().atacarPersonagens();
         }
     }

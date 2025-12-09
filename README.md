@@ -25,7 +25,7 @@ Cada personagem possui atributos específicos de combate:
 #### Funcionamento
 
 - Ao clicar em **Atacar**, os personagens selecionados (Cavaleiro e Arqueiro) atacam todos os outros personagens em campo
-- O **Aldeão** não causa dano (ataque = 0), mas pode ser atacado
+- O **Aldeão não pode atacar** - o botão de ataque fica desabilitado quando ele está selecionado
 - O dano é aplicado através do método `sofrerDano(int dano)` que atualiza o atributo `vida`
 - A vida não pode ficar negativa (mínimo = 0)
 

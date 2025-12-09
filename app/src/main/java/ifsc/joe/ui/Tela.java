@@ -165,16 +165,6 @@ public class Tela extends JPanel {
     }
 
     /**
-     * Ataca apenas os aldeões (aldeões não causam dano).
-     */
-    public void atacarAldeoes() {
-        this.personagens.stream()
-            .filter(p -> p instanceof Aldeao)
-            .forEach(Personagem::atacar);
-        this.repaint();
-    }
-
-    /**
      * Faz todos os arqueiros atacarem todos os outros personagens.
      */
     public void atacarArqueiros() {
