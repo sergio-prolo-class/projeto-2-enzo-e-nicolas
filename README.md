@@ -20,7 +20,8 @@ Cada personagem possui atributos específicos de combate:
 |------------|------|--------|------------|
 | **Aldeão** | 100 | 0 | 10 |
 | **Arqueiro** | 80 | 20 | 15 |
-| **Cavaleiro** | 150 | 25 | 20 |
+| **Cavaleiro (montado)** | 150 | 25 | 20 |
+| **Cavaleiro (desmontado)** | 150 | 25 | 10 |
 
 #### Funcionamento
 
@@ -138,17 +139,81 @@ public boolean estaNoAlcance(Personagem outro) {
 }
 ```
 
-#### Indicação Visual (Aura)
+#### Indicação Visual (Aura) - Sempre Visível
 
-Quando um personagem ataca, um círculo semi-transparente é desenhado ao redor dele:
+A aura de alcance é exibida **permanentemente** para todos os personagens que podem atacar:
 - O **raio** do círculo corresponde ao alcance de ataque
 - A **cor** é específica para cada tipo de personagem
 - O círculo possui preenchimento semi-transparente e borda mais visível
+- **Aldeões não exibem aura** pois não podem atacar (ataque = 0)
+
+| Personagem | Aura Visível |
+|------------|--------------|
+| **Aldeão** | ❌ Não |
+| **Arqueiro** | ✅ Sempre (verde) |
+| **Cavaleiro** | ✅ Sempre (azul) |
 
 #### Mensagens de Ataque no Terminal
 
 ```
 [ATAQUE] Arqueiro causou 20 de dano em Aldeao (distância: 87.5px, alcance: 150px)
+```
+
+---
+
+### 5. Controle de Montaria (Cavaleiro)
+
+O Cavaleiro possui a capacidade de alternar entre dois estados: **montado** e **desmontado**.
+
+#### Estados do Cavaleiro
+
+| Estado | Imagem Normal | Imagem Atacando | Velocidade |
+|--------|---------------|-----------------|------------|
+| **Montado** | `cavaleiro.png` | `cavaleiro2.png` | 20 |
+| **Desmontado** | `guerreiro.png` | `guerreiro2.png` | 10 |
+
+#### Funcionamento
+
+- O Cavaleiro **começa montado** por padrão
+- Ao clicar no botão **"Montar"**, todos os cavaleiros alternam seu estado
+- Quando **montado**: é mais rápido e usa a sprite do cavaleiro
+- Quando **desmontado**: é mais lento e usa a sprite do guerreiro
+- A imagem muda corretamente ao atacar em ambos os estados
+
+#### Botão Montar/Desmontar
+
+O botão "Montar" só fica habilitado quando:
+- Radio button **"Cavaleiro"** está selecionado
+- Radio button **"Todos"** está selecionado
+
+Quando desabilitado, exibe tooltip: *"Selecione Cavaleiro ou Todos"*
+
+#### Métodos da Classe Cavaleiro
+
+```java
+public void alternarMontado()  // Alterna entre montado/desmontado
+public boolean isMontado()     // Verifica se está montado
+
+@Override
+public int getVelocidade() {
+    return montado ? VELOCIDADE_MONTADO : VELOCIDADE_DESMONTADO;
+}
+
+@Override
+public String getNomeImagem() {
+    return montado ? "cavaleiro" : "guerreiro";
+}
+
+@Override
+public String getNomeImagemAtacando() {
+    return montado ? "cavaleiro2" : "guerreiro2";
+}
+```
+
+#### Método na Classe Tela
+
+```java
+public void alternarMontariaCavaleiros()  // Alterna montaria de todos os cavaleiros
 ```
 
 ---
@@ -212,12 +277,17 @@ Personagem (abstract)
 3. **Movimentar**: Use as setas direcionais para mover os personagens selecionados
 
 4. **Atacar**: Clique em "Atacar" para que os personagens selecionados ataquem
-   - A aura de alcance será exibida
+   - A aura de alcance é sempre visível para personagens combatentes
    - Apenas alvos dentro do alcance receberão dano
 
-5. **Observar**: 
+5. **Montar/Desmontar**: Com "Cavaleiro" ou "Todos" selecionado, clique em "Montar" para:
+   - Alternar cavaleiros entre montado (rápido) e desmontado (lento)
+   - A aparência muda: cavaleiro ↔ guerreiro
+
+6. **Observar**: 
    - Personagens com vida = 0 desaparecem gradualmente
    - O placar de baixas é atualizado automaticamente
+   - As auras de alcance ajudam a visualizar o campo de batalha
 
 ---
 
