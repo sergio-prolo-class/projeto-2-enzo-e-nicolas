@@ -209,15 +209,25 @@ public class Tela extends JPanel {
     }
 
     /**
-     * Aplica dano do atacante a todos os outros personagens em campo.
+     * Aplica dano do atacante aos personagens que estão dentro do alcance.
+     * Usa a distância entre os centros dos personagens para verificar o alcance.
      *
      * @param atacante personagem que está atacando
      */
     private void aplicarDanoAosAlvos(Personagem atacante) {
         int dano = atacante.getAtaque();
+        int alcance = atacante.getAlcanceAtaque();
+        
         this.personagens.stream()
             .filter(alvo -> alvo != atacante) // Não ataca a si mesmo
-            .forEach(alvo -> alvo.sofrerDano(dano));
+            .filter(alvo -> atacante.estaNoAlcance(alvo)) // Só ataca se estiver no alcance
+            .forEach(alvo -> {
+                alvo.sofrerDano(dano);
+                System.out.println("[ATAQUE] " + atacante.getClass().getSimpleName() + 
+                    " causou " + dano + " de dano em " + alvo.getClass().getSimpleName() +
+                    " (distância: " + String.format("%.1f", atacante.calcularDistancia(alvo)) + 
+                    "px, alcance: " + alcance + "px)");
+            });
     }
 
     /**

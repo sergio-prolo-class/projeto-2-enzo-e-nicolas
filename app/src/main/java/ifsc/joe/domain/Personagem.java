@@ -60,6 +60,26 @@ public abstract class Personagem {
     }
 
     /**
+     * Retorna o alcance de ataque do personagem em pixels.
+     * Pode ser sobrescrito para personagens com maior ou menor alcance.
+     *
+     * @return alcance de ataque em pixels
+     */
+    public int getAlcanceAtaque() {
+        return 50; // Alcance padrão (Aldeão)
+    }
+
+    /**
+     * Retorna a cor da aura de alcance do personagem.
+     * Pode ser sobrescrito para personalizar a cor por tipo.
+     *
+     * @return cor da aura de alcance
+     */
+    public Color getCorAlcance() {
+        return new Color(100, 100, 100, 60); // Cinza semi-transparente padrão
+    }
+
+    /**
      * Retorna o nome base da imagem do personagem (sem extensão).
      * Cada subclasse deve implementar este método.
      *
@@ -80,6 +100,7 @@ public abstract class Personagem {
     /**
      * Desenha o personagem no JPanel utilizando as coordenadas X e Y.
      * Aplica transparência quando o personagem está morrendo.
+     * Desenha a aura de alcance quando está atacando.
      *
      * @param g objeto Graphics do JPanel
      * @param painel JPanel onde o personagem será desenhado
@@ -91,8 +112,87 @@ public abstract class Personagem {
         // Aplica efeito de transparência
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
+        
+        // Desenha a aura de alcance se estiver atacando
+        if (atacando && getAtaque() > 0) {
+            desenharAuraAlcance(g2d);
+        }
+        
         g2d.drawImage(this.icone, this.posX, this.posY, painel);
         g2d.dispose();
+    }
+
+    /**
+     * Desenha a aura visual indicando o alcance de ataque do personagem.
+     *
+     * @param g2d objeto Graphics2D para desenhar
+     */
+    private void desenharAuraAlcance(Graphics2D g2d) {
+        int alcance = getAlcanceAtaque();
+        int centroX = getCentroX();
+        int centroY = getCentroY();
+        
+        // Ativa anti-aliasing para desenho suave
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // Desenha o círculo preenchido (área de alcance)
+        g2d.setColor(getCorAlcance());
+        g2d.fillOval(centroX - alcance, centroY - alcance, alcance * 2, alcance * 2);
+        
+        // Desenha a borda do círculo
+        g2d.setColor(getCorBordaAlcance());
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawOval(centroX - alcance, centroY - alcance, alcance * 2, alcance * 2);
+    }
+
+    /**
+     * Retorna a cor da borda da aura de alcance.
+     *
+     * @return cor da borda
+     */
+    protected Color getCorBordaAlcance() {
+        Color corBase = getCorAlcance();
+        return new Color(corBase.getRed(), corBase.getGreen(), corBase.getBlue(), 150);
+    }
+
+    /**
+     * Retorna a coordenada X do centro do personagem.
+     *
+     * @return coordenada X do centro
+     */
+    public int getCentroX() {
+        return posX + (icone != null ? icone.getWidth(null) / 2 : 0);
+    }
+
+    /**
+     * Retorna a coordenada Y do centro do personagem.
+     *
+     * @return coordenada Y do centro
+     */
+    public int getCentroY() {
+        return posY + (icone != null ? icone.getHeight(null) / 2 : 0);
+    }
+
+    /**
+     * Calcula a distância entre este personagem e outro.
+     *
+     * @param outro o outro personagem
+     * @return distância em pixels
+     */
+    public double calcularDistancia(Personagem outro) {
+        int dx = this.getCentroX() - outro.getCentroX();
+        int dy = this.getCentroY() - outro.getCentroY();
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * Verifica se outro personagem está dentro do alcance de ataque.
+     *
+     * @param outro o outro personagem
+     * @return true se está no alcance, false caso contrário
+     */
+    public boolean estaNoAlcance(Personagem outro) {
+        return calcularDistancia(outro) <= getAlcanceAtaque();
     }
 
     /**

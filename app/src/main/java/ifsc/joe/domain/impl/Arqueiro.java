@@ -2,10 +2,12 @@ package ifsc.joe.domain.impl;
 
 import ifsc.joe.domain.Personagem;
 
+import java.awt.*;
+
 /**
  * Classe que representa um Arqueiro no jogo.
  * O Arqueiro é um personagem ágil com velocidade maior que o Aldeão.
- * Especializado em ataques à distância.
+ * Especializado em ataques à distância com maior alcance (150px).
  */
 public class Arqueiro extends Personagem {
 
@@ -14,6 +16,7 @@ public class Arqueiro extends Personagem {
     private static final int VELOCIDADE = 15;
     private static final int ATAQUE = 20;
     private static final int VIDA = 80;
+    private static final int ALCANCE = 150;
 
     public Arqueiro(int x, int y) {
         super(x, y);
@@ -57,6 +60,26 @@ public class Arqueiro extends Personagem {
     @Override
     public int getVidaInicial() {
         return VIDA;
+    }
+
+    /**
+     * O Arqueiro tem o maior alcance de ataque, podendo acertar de longe.
+     *
+     * @return alcance de ataque em pixels
+     */
+    @Override
+    public int getAlcanceAtaque() {
+        return ALCANCE;
+    }
+
+    /**
+     * Cor da aura do Arqueiro (verde).
+     *
+     * @return cor da aura de alcance
+     */
+    @Override
+    public Color getCorAlcance() {
+        return new Color(34, 139, 34, 50); // Verde semi-transparente
     }
 }
 
