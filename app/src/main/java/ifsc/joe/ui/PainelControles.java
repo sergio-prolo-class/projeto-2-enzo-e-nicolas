@@ -4,6 +4,7 @@ import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 /**
@@ -45,7 +46,29 @@ public class PainelControles {
     public PainelControles() {
         this.sorteio = new Random();
         configurarListeners();
+        desabilitarFocoBotoes();
+        configurarAtalhosDoTeclado();
         iniciarAtualizacaoPlacar();
+    }
+
+    /**
+     * Desabilita o foco dos botões para evitar conflitos com atalhos de teclado.
+     * Isso impede que a tecla espaço ative o botão que está com foco.
+     * Também remove Tab das teclas de navegação de foco para usar como atalho.
+     */
+    private void desabilitarFocoBotoes() {
+        atacarButton.setFocusable(false);
+        montarButton.setFocusable(false);
+        buttonCima.setFocusable(false);
+        buttonBaixo.setFocusable(false);
+        buttonEsquerda.setFocusable(false);
+        buttonDireita.setFocusable(false);
+        bCriaAldeao.setFocusable(false);
+        bCriaArqueiro.setFocusable(false);
+        bCriaCavaleiro.setFocusable(false);
+        
+        // Remove Tab das teclas de navegação de foco para usar como atalho
+        painelPrincipal.setFocusTraversalKeysEnabled(false);
     }
 
     /**
@@ -282,5 +305,103 @@ public class PainelControles {
             labelBaixasCavaleiros.setText("Cavaleiros: " + getTela().getBaixasCavaleiros());
             labelTotalBaixas.setText("Total: " + getTela().getTotalBaixas());
         }
+    }
+
+    /**
+     * Configura todos os atalhos de teclado usando KeyEventDispatcher.
+     * Esta abordagem intercepta TODAS as teclas globalmente, independente do foco.
+     * Atalhos disponíveis:
+     * - WASD ou Setas: Movimento
+     * - 1, 2, 3: Criar Aldeão, Arqueiro, Cavaleiro
+     * - Espaço: Atacar
+     * - Tab: Alternar filtro de tipo
+     * - M: Montar/Desmontar cavaleiros
+     */
+    private void configurarAtalhosDoTeclado() {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            // Só processa eventos de tecla pressionada (ignora released e typed)
+            if (e.getID() != KeyEvent.KEY_PRESSED) {
+                return false;
+            }
+
+            int keyCode = e.getKeyCode();
+
+            switch (keyCode) {
+                // === MOVIMENTO (WASD e Setas) ===
+                case KeyEvent.VK_W:
+                case KeyEvent.VK_UP:
+                    movimentarPorTipoSelecionado(Direcao.CIMA);
+                    return true;
+
+                case KeyEvent.VK_S:
+                case KeyEvent.VK_DOWN:
+                    movimentarPorTipoSelecionado(Direcao.BAIXO);
+                    return true;
+
+                case KeyEvent.VK_A:
+                case KeyEvent.VK_LEFT:
+                    movimentarPorTipoSelecionado(Direcao.ESQUERDA);
+                    return true;
+
+                case KeyEvent.VK_D:
+                case KeyEvent.VK_RIGHT:
+                    movimentarPorTipoSelecionado(Direcao.DIREITA);
+                    return true;
+
+                // === CRIAR PERSONAGENS (1, 2, 3) ===
+                case KeyEvent.VK_1:
+                case KeyEvent.VK_NUMPAD1:
+                    criarAldeaoAleatorio();
+                    return true;
+
+                case KeyEvent.VK_2:
+                case KeyEvent.VK_NUMPAD2:
+                    criarArqueiroAleatorio();
+                    return true;
+
+                case KeyEvent.VK_3:
+                case KeyEvent.VK_NUMPAD3:
+                    criarCavaleiroAleatorio();
+                    return true;
+
+                // === ATACAR (Espaço) ===
+                case KeyEvent.VK_SPACE:
+                    if (!aldeaoRadioButton.isSelected()) {
+                        atacarPorTipoSelecionado();
+                    }
+                    return true;
+
+                // === ALTERNAR FILTRO DE TIPO (Tab) ===
+                case KeyEvent.VK_TAB:
+                    alternarFiltroTipo();
+                    return true;
+
+                // === MONTAR/DESMONTAR (M) ===
+                case KeyEvent.VK_M:
+                    getTela().alternarMontariaCavaleiros();
+                    return true;
+
+                default:
+                    return false; // Deixa outras teclas passarem
+            }
+        });
+    }
+
+    /**
+     * Alterna entre os filtros de tipo de personagem na ordem:
+     * Todos -> Aldeão -> Arqueiro -> Cavaleiro -> Todos...
+     */
+    private void alternarFiltroTipo() {
+        if (todosRadioButton.isSelected()) {
+            aldeaoRadioButton.setSelected(true);
+        } else if (aldeaoRadioButton.isSelected()) {
+            arqueiroRadioButton.setSelected(true);
+        } else if (arqueiroRadioButton.isSelected()) {
+            cavaleiroRadioButton.setSelected(true);
+        } else {
+            todosRadioButton.setSelected(true);
+        }
+        // Atualiza o estado dos botões após mudar a seleção
+        atualizarEstadoBotoes();
     }
 }

@@ -218,6 +218,74 @@ public void alternarMontariaCavaleiros()  // Alterna montaria de todos os cavale
 
 ---
 
+### 6. Atalhos de Teclado
+
+O jogo suporta controle completo via teclado, permitindo uma experiência de jogo mais fluida e rápida.
+
+#### Tabela de Atalhos
+
+| Tecla | Ação | Observação |
+|-------|------|------------|
+| **W** ou **↑** | Mover para cima | Move personagens do tipo selecionado |
+| **S** ou **↓** | Mover para baixo | Move personagens do tipo selecionado |
+| **A** ou **←** | Mover para esquerda | Move personagens do tipo selecionado |
+| **D** ou **→** | Mover para direita | Move personagens do tipo selecionado |
+| **1** | Criar Aldeão | Também funciona no numpad |
+| **2** | Criar Arqueiro | Também funciona no numpad |
+| **3** | Criar Cavaleiro | Também funciona no numpad |
+| **Espaço** | Atacar | Não funciona se Aldeão estiver selecionado |
+| **Tab** | Alternar filtro de tipo | Ciclo: Todos → Aldeão → Arqueiro → Cavaleiro |
+| **M** | Montar/Desmontar | Funciona independente do tipo selecionado |
+
+#### Implementação Técnica
+
+Os atalhos foram implementados usando `KeyEventDispatcher`, que intercepta eventos de teclado globalmente no `KeyboardFocusManager`. Esta abordagem foi escolhida porque:
+
+1. **Funciona independente do foco**: Não importa qual componente está selecionado
+2. **Intercepta antes dos componentes**: Evita conflitos com comportamentos padrão do Swing
+3. **Controle total**: Permite consumir eventos para que não afetem outros componentes
+
+```java
+KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+    if (e.getID() != KeyEvent.KEY_PRESSED) {
+        return false; // Ignora KEY_RELEASED e KEY_TYPED
+    }
+
+    switch (e.getKeyCode()) {
+        case KeyEvent.VK_W:
+        case KeyEvent.VK_UP:
+            movimentarPorTipoSelecionado(Direcao.CIMA);
+            return true; // Consome o evento
+        // ... outros casos
+    }
+    return false; // Deixa passar teclas não mapeadas
+});
+```
+
+#### Vantagens sobre KeyListener
+
+| Aspecto | KeyListener | KeyEventDispatcher |
+|---------|-------------|-------------------|
+| Foco necessário | Sim | Não |
+| Conflito com Tab | Sim | Não |
+| Conflito com Espaço em botões | Sim | Não |
+| Escopo | Componente | Global |
+
+#### Desabilitação de Foco em Botões
+
+Para evitar conflitos com o comportamento padrão dos botões (espaço ativa botão com foco), todos os botões de ação têm `setFocusable(false)`:
+
+```java
+private void desabilitarFocoBotoes() {
+    atacarButton.setFocusable(false);
+    montarButton.setFocusable(false);
+    buttonCima.setFocusable(false);
+    // ... outros botões
+}
+```
+
+---
+
 ## 🏗️ Arquitetura do Projeto
 
 ### Estrutura de Classes
@@ -266,28 +334,36 @@ Personagem (abstract)
 
 ## 🎯 Como Jogar
 
-1. **Criar Personagens**: Clique nos botões com ícones (Aldeão, Arqueiro, Cavaleiro) para criar personagens em posições aleatórias
+### Controles por Mouse
 
-2. **Selecionar Tipo**: Use os radio buttons para selecionar qual tipo de personagem controlar:
-   - Todos
-   - Aldeão
-   - Arqueiro
-   - Cavaleiro
+1. **Criar Personagens**: Clique nos botões com ícones (Aldeão, Arqueiro, Cavaleiro)
 
-3. **Movimentar**: Use as setas direcionais para mover os personagens selecionados
+2. **Selecionar Tipo**: Use os radio buttons para selecionar qual tipo controlar
 
-4. **Atacar**: Clique em "Atacar" para que os personagens selecionados ataquem
-   - A aura de alcance é sempre visível para personagens combatentes
-   - Apenas alvos dentro do alcance receberão dano
+3. **Movimentar**: Clique nas setas direcionais
 
-5. **Montar/Desmontar**: Com "Cavaleiro" ou "Todos" selecionado, clique em "Montar" para:
-   - Alternar cavaleiros entre montado (rápido) e desmontado (lento)
-   - A aparência muda: cavaleiro ↔ guerreiro
+4. **Atacar**: Clique em "Atacar"
 
-6. **Observar**: 
-   - Personagens com vida = 0 desaparecem gradualmente
-   - O placar de baixas é atualizado automaticamente
-   - As auras de alcance ajudam a visualizar o campo de batalha
+5. **Montar/Desmontar**: Clique em "Montar"
+
+### Controles por Teclado (Recomendado) ⌨️
+
+| Ação | Teclas |
+|------|--------|
+| Criar personagens | **1** (Aldeão), **2** (Arqueiro), **3** (Cavaleiro) |
+| Mover | **WASD** ou **Setas** |
+| Atacar | **Espaço** |
+| Alternar tipo | **Tab** |
+| Montar/Desmontar | **M** |
+
+### Dicas de Jogo
+
+- A **aura de alcance** é sempre visível para personagens combatentes
+- Apenas alvos **dentro do alcance** receberão dano
+- O **Aldeão não pode atacar** (Espaço é ignorado quando selecionado)
+- **M** funciona para montar/desmontar independente do tipo selecionado
+- Personagens com vida = 0 **desaparecem gradualmente**
+- O **placar de baixas** é atualizado automaticamente
 
 ---
 
