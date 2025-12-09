@@ -100,7 +100,7 @@ public abstract class Personagem {
     /**
      * Desenha o personagem no JPanel utilizando as coordenadas X e Y.
      * Aplica transparência quando o personagem está morrendo.
-     * Desenha a aura de alcance quando está atacando.
+     * Desenha a aura de alcance sempre para personagens que podem atacar.
      *
      * @param g objeto Graphics do JPanel
      * @param painel JPanel onde o personagem será desenhado
@@ -113,8 +113,8 @@ public abstract class Personagem {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
         
-        // Desenha a aura de alcance se estiver atacando
-        if (atacando && getAtaque() > 0) {
+        // Desenha a aura de alcance sempre para personagens que podem atacar
+        if (getAtaque() > 0) {
             desenharAuraAlcance(g2d);
         }
         

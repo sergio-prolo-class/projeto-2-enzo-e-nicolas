@@ -27,6 +27,7 @@ public class PainelControles {
     private JRadioButton arqueiroRadioButton;
     private JRadioButton cavaleiroRadioButton;
     private JButton atacarButton;
+    private JButton montarButton;
     private JButton buttonCima;
     private JButton buttonEsquerda;
     private JButton buttonBaixo;
@@ -54,6 +55,7 @@ public class PainelControles {
         configurarBotoesMovimento();
         configurarBotoesCriacao();
         configurarBotaoAtaque();
+        configurarBotaoMontar();
         configurarRadioButtons();
     }
 
@@ -104,33 +106,56 @@ public class PainelControles {
     }
 
     /**
-     * Configura os listeners dos radio buttons para habilitar/desabilitar o botão de ataque.
-     * Aldeões não podem atacar, então o botão é desabilitado quando selecionado.
+     * Configura o listener do botão de montar/desmontar.
+     * Só funciona para cavaleiros.
      */
-    private void configurarRadioButtons() {
-        // Listener para desabilitar ataque quando Aldeão estiver selecionado
-        aldeaoRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
-        arqueiroRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
-        cavaleiroRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
-        todosRadioButton.addActionListener(e -> atualizarEstadoBotaoAtaque());
-        
-        // Configura estado inicial (Aldeão começa selecionado por padrão)
-        atualizarEstadoBotaoAtaque();
+    private void configurarBotaoMontar() {
+        montarButton.addActionListener(e -> {
+            getTela().alternarMontariaCavaleiros();
+        });
+        montarButton.setToolTipText("Montar/Desmontar cavaleiros");
     }
 
     /**
-     * Atualiza o estado do botão de ataque baseado no radio button selecionado.
-     * Desabilita o botão quando Aldeão estiver selecionado, pois aldeões não atacam.
+     * Configura os listeners dos radio buttons para habilitar/desabilitar botões.
+     * Aldeões não podem atacar, então o botão é desabilitado quando selecionado.
+     * Só cavaleiros podem montar/desmontar.
      */
-    private void atualizarEstadoBotaoAtaque() {
-        boolean aldeaoSelecionado = aldeaoRadioButton.isSelected();
-        atacarButton.setEnabled(!aldeaoSelecionado);
+    private void configurarRadioButtons() {
+        // Listener para atualizar estado dos botões conforme seleção
+        aldeaoRadioButton.addActionListener(e -> atualizarEstadoBotoes());
+        arqueiroRadioButton.addActionListener(e -> atualizarEstadoBotoes());
+        cavaleiroRadioButton.addActionListener(e -> atualizarEstadoBotoes());
+        todosRadioButton.addActionListener(e -> atualizarEstadoBotoes());
         
-        // Atualiza o tooltip para informar o usuário
+        // Configura estado inicial (Aldeão começa selecionado por padrão)
+        atualizarEstadoBotoes();
+    }
+
+    /**
+     * Atualiza o estado dos botões baseado no radio button selecionado.
+     * - Desabilita ataque quando Aldeão estiver selecionado
+     * - Habilita montar apenas quando Cavaleiro ou Todos estiver selecionado
+     */
+    private void atualizarEstadoBotoes() {
+        boolean aldeaoSelecionado = aldeaoRadioButton.isSelected();
+        boolean cavaleiroSelecionado = cavaleiroRadioButton.isSelected();
+        boolean todosSelecionado = todosRadioButton.isSelected();
+        
+        // Botão de ataque
+        atacarButton.setEnabled(!aldeaoSelecionado);
         if (aldeaoSelecionado) {
             atacarButton.setToolTipText("Aldeões não podem atacar");
         } else {
             atacarButton.setToolTipText("Atacar personagens no alcance");
+        }
+        
+        // Botão de montar (só para cavaleiros)
+        montarButton.setEnabled(cavaleiroSelecionado || todosSelecionado);
+        if (cavaleiroSelecionado || todosSelecionado) {
+            montarButton.setToolTipText("Montar/Desmontar cavaleiros");
+        } else {
+            montarButton.setToolTipText("Selecione Cavaleiro ou Todos");
         }
     }
 

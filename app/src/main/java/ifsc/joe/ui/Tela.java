@@ -327,4 +327,16 @@ public class Tela extends JPanel {
     public int getQuantidadePersonagens() {
         return this.personagens.size();
     }
+
+    /**
+     * Alterna o estado de montaria de todos os cavaleiros.
+     * Cavaleiros montados ficam desmontados e vice-versa.
+     */
+    public void alternarMontariaCavaleiros() {
+        this.personagens.stream()
+            .filter(p -> p instanceof Cavaleiro)
+            .map(p -> (Cavaleiro) p)
+            .forEach(Cavaleiro::alternarMontado);
+        this.repaint();
+    }
 }
