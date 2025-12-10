@@ -212,15 +212,32 @@ public class Tela extends JPanel {
      * Cavaleiros e arqueiros aplicam dano a todos os outros personagens.
      */
     public void atacarPersonagens() {
-        // Coleta todos os atacantes (cavaleiros e arqueiros)
+        // Coleta todos os atacantes (qualquer personagem com ataque > 0)
         List<Personagem> atacantes = this.personagens.stream()
-                .filter(p -> p instanceof Cavaleiro || p instanceof Arqueiro)
+                .filter(p -> p.getAtaque() > 0)
                 .collect(Collectors.toList());
 
         // Cada atacante aplica dano a todos os outros personagens (exceto a si mesmo)
         for (Personagem atacante : atacantes) {
             atacante.atacar();
             aplicarDanoAosAlvos(atacante);
+        }
+
+        removerPersonagensMortos();
+        this.repaint();
+    }
+
+    /**
+     * Faz todos os aldeões atacarem todos os outros personagens.
+     */
+    public void atacarAldeoes() {
+        List<Personagem> aldeoes = this.personagens.stream()
+                .filter(p -> p instanceof Aldeao)
+                .collect(Collectors.toList());
+
+        for (Personagem aldeao : aldeoes) {
+            aldeao.atacar();
+            aplicarDanoAosAlvos(aldeao);
         }
 
         removerPersonagensMortos();

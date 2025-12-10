@@ -40,6 +40,16 @@ public class Aldeao extends Personagem {
     }
 
     /**
+     * O Aldeão tem um ataque fraco.
+     *
+     * @return valor de ataque base
+     */
+    @Override
+    public int getAtaqueBase() {
+        return 5;
+    }
+
+    /**
      * Cor da aura do Aldeão (marrom/terra).
      *
      * @return cor da aura de alcance

@@ -34,7 +34,7 @@ public class PainelControles {
     private JButton buttonBaixo;
     private JButton buttonDireita;
     private JLabel logo;
-    
+
     // Componentes do placar de baixas
     private JPanel painelPlacar;
     private JLabel labelBaixasAldeoes;
@@ -66,7 +66,7 @@ public class PainelControles {
         bCriaAldeao.setFocusable(false);
         bCriaArqueiro.setFocusable(false);
         bCriaCavaleiro.setFocusable(false);
-        
+
         // Remove Tab das teclas de navegação de foco para usar como atalho
         painelPrincipal.setFocusTraversalKeysEnabled(false);
     }
@@ -150,7 +150,7 @@ public class PainelControles {
         arqueiroRadioButton.addActionListener(e -> atualizarEstadoBotoes());
         cavaleiroRadioButton.addActionListener(e -> atualizarEstadoBotoes());
         todosRadioButton.addActionListener(e -> atualizarEstadoBotoes());
-        
+
         // Configura estado inicial (Aldeão começa selecionado por padrão)
         atualizarEstadoBotoes();
     }
@@ -161,18 +161,14 @@ public class PainelControles {
      * - Habilita montar apenas quando Cavaleiro ou Todos estiver selecionado
      */
     private void atualizarEstadoBotoes() {
-        boolean aldeaoSelecionado = aldeaoRadioButton.isSelected();
         boolean cavaleiroSelecionado = cavaleiroRadioButton.isSelected();
         boolean todosSelecionado = todosRadioButton.isSelected();
-        
+
         // Botão de ataque
-        atacarButton.setEnabled(!aldeaoSelecionado);
-        if (aldeaoSelecionado) {
-            atacarButton.setToolTipText("Aldeões não podem atacar");
-        } else {
-            atacarButton.setToolTipText("Atacar personagens no alcance");
-        }
-        
+        // Botão de ataque
+        atacarButton.setEnabled(true);
+        atacarButton.setToolTipText("Atacar personagens no alcance");
+
         // Botão de montar (só para cavaleiros)
         montarButton.setEnabled(cavaleiroSelecionado || todosSelecionado);
         if (cavaleiroSelecionado || todosSelecionado) {
@@ -187,7 +183,9 @@ public class PainelControles {
      * Nota: Aldeões não atacam, então essa opção não é chamada para eles.
      */
     private void atacarPorTipoSelecionado() {
-        if (arqueiroRadioButton.isSelected()) {
+        if (aldeaoRadioButton.isSelected()) {
+            getTela().atacarAldeoes();
+        } else if (arqueiroRadioButton.isSelected()) {
             getTela().atacarArqueiros();
         } else if (cavaleiroRadioButton.isSelected()) {
             getTela().atacarCavaleiros();
@@ -230,7 +228,7 @@ public class PainelControles {
         final int PADDING = 50;
         int posX = sorteio.nextInt(Math.max(1, painelTela.getWidth() - PADDING));
         int posY = sorteio.nextInt(Math.max(1, painelTela.getHeight() - PADDING));
-        return new int[]{posX, posY};
+        return new int[] { posX, posY };
     }
 
     /**
@@ -266,13 +264,13 @@ public class PainelControles {
         painelPlacar = new JPanel();
         painelPlacar.setLayout(new GridLayout(4, 1, 2, 2));
         painelPlacar.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createEtchedBorder(), "Baixas"));
-        
+                BorderFactory.createEtchedBorder(), "Baixas"));
+
         labelBaixasAldeoes = new JLabel("Aldeões: 0");
         labelBaixasArqueiros = new JLabel("Arqueiros: 0");
         labelBaixasCavaleiros = new JLabel("Cavaleiros: 0");
         labelTotalBaixas = new JLabel("Total: 0");
-        
+
         // Estiliza os labels
         Font fontePlacar = new Font("SansSerif", Font.BOLD, 11);
         labelBaixasAldeoes.setFont(fontePlacar);
@@ -280,7 +278,7 @@ public class PainelControles {
         labelBaixasCavaleiros.setFont(fontePlacar);
         labelTotalBaixas.setFont(fontePlacar);
         labelTotalBaixas.setForeground(new Color(180, 0, 0));
-        
+
         painelPlacar.add(labelBaixasAldeoes);
         painelPlacar.add(labelBaixasArqueiros);
         painelPlacar.add(labelBaixasCavaleiros);
@@ -366,9 +364,7 @@ public class PainelControles {
 
                 // === ATACAR (Espaço) ===
                 case KeyEvent.VK_SPACE:
-                    if (!aldeaoRadioButton.isSelected()) {
-                        atacarPorTipoSelecionado();
-                    }
+                    atacarPorTipoSelecionado();
                     return true;
 
                 // === ALTERNAR FILTRO DE TIPO (Tab) ===

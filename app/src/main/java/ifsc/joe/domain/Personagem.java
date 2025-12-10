@@ -1,6 +1,10 @@
 package ifsc.joe.domain;
 
 import ifsc.joe.enums.Direcao;
+import ifsc.joe.interfaces.Combatente;
+import ifsc.joe.interfaces.Destrutivel;
+import ifsc.joe.interfaces.Movel;
+import ifsc.joe.interfaces.Posicionavel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,9 +13,10 @@ import java.util.Objects;
 
 /**
  * Classe abstrata que representa a base de todos os personagens do jogo.
- * Implementa o padrão de herança e polimorfismo.
+ * Implementa o padrão de herança e polimorfismo, além das interfaces de
+ * capacidade.
  */
-public abstract class Personagem {
+public abstract class Personagem implements Movel, Combatente, Destrutivel {
 
     protected int posX;
     protected int posY;
@@ -224,7 +229,7 @@ public abstract class Personagem {
      * @param outro o outro personagem
      * @return distância em pixels
      */
-    public double calcularDistancia(Personagem outro) {
+    public double calcularDistancia(Posicionavel outro) {
         int dx = this.getCentroX() - outro.getCentroX();
         int dy = this.getCentroY() - outro.getCentroY();
         return Math.sqrt(dx * dx + dy * dy);
@@ -236,7 +241,7 @@ public abstract class Personagem {
      * @param outro o outro personagem
      * @return true se está no alcance, false caso contrário
      */
-    public boolean estaNoAlcance(Personagem outro) {
+    public boolean estaNoAlcance(Posicionavel outro) {
         return calcularDistancia(outro) <= getAlcanceAtaque();
     }
 
