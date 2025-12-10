@@ -102,22 +102,25 @@ public abstract class Personagem {
      * Aplica transparência quando o personagem está morrendo.
      * Desenha a aura de alcance sempre para personagens que podem atacar.
      *
-     * @param g objeto Graphics do JPanel
+     * @param g      objeto Graphics do JPanel
      * @param painel JPanel onde o personagem será desenhado
      */
     public void desenhar(Graphics g, JPanel painel) {
         String nomeImagem = atacando ? getNomeImagemAtacando() : getNomeImagem();
         this.icone = carregarImagem(nomeImagem);
-        
+
         // Aplica efeito de transparência
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
-        
+
         // Desenha a aura de alcance sempre para personagens que podem atacar
         if (getAtaque() > 0) {
             desenharAuraAlcance(g2d);
         }
-        
+
+        // Desenha a Barra de Vida
+        desenharBarraVida(g2d);
+
         g2d.drawImage(this.icone, this.posX, this.posY, painel);
         g2d.dispose();
     }
@@ -131,18 +134,60 @@ public abstract class Personagem {
         int alcance = getAlcanceAtaque();
         int centroX = getCentroX();
         int centroY = getCentroY();
-        
+
         // Ativa anti-aliasing para desenho suave
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
+
         // Desenha o círculo preenchido (área de alcance)
         g2d.setColor(getCorAlcance());
         g2d.fillOval(centroX - alcance, centroY - alcance, alcance * 2, alcance * 2);
-        
+
         // Desenha a borda do círculo
         g2d.setColor(getCorBordaAlcance());
         g2d.setStroke(new BasicStroke(2));
         g2d.drawOval(centroX - alcance, centroY - alcance, alcance * 2, alcance * 2);
+    }
+
+    /**
+     * Desenha a barra de vida acima do personagem.
+     * Cor muda conforme a porcentagem de vida:
+     * - Verde: > 75%
+     * - Amarelo: 25% - 75%
+     * - Vermelho: < 25%
+     *
+     * @param g2d contexto gráfico
+     */
+    private void desenharBarraVida(Graphics2D g2d) {
+        if (!estaVivo())
+            return;
+
+        int larguraBarra = 40; // Largura total da barra
+        int alturaBarra = 5;
+        int gap = 5; // Distância entre o personagem e a barra
+
+        int xBarra = getCentroX() - (larguraBarra / 2);
+        int yBarra = this.posY - gap - alturaBarra;
+
+        // Calcular porcentagem de vida
+        float pVida = (float) this.vida / getVidaInicial();
+        int larguraAtual = (int) (larguraBarra * pVida);
+
+        // Definir cor
+        if (pVida > 0.75f) {
+            g2d.setColor(Color.GREEN);
+        } else if (pVida > 0.25f) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.RED);
+        }
+
+        // Desenhar barra preenchida
+        g2d.fillRect(xBarra, yBarra, larguraAtual, alturaBarra);
+
+        // Desenhar borda
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
+        g2d.drawRect(xBarra, yBarra, larguraBarra, alturaBarra);
     }
 
     /**
@@ -198,18 +243,18 @@ public abstract class Personagem {
     /**
      * Atualiza as coordenadas X e Y do personagem baseado na direção
      *
-     * @param direcao direção do movimento
+     * @param direcao    direção do movimento
      * @param maxLargura largura máxima da área de movimento
-     * @param maxAltura altura máxima da área de movimento
+     * @param maxAltura  altura máxima da área de movimento
      */
     public void mover(Direcao direcao, int maxLargura, int maxAltura) {
         int velocidade = getVelocidade();
-        
+
         switch (direcao) {
-            case CIMA     -> this.posY -= velocidade;
-            case BAIXO    -> this.posY += velocidade;
+            case CIMA -> this.posY -= velocidade;
+            case BAIXO -> this.posY += velocidade;
             case ESQUERDA -> this.posX -= velocidade;
-            case DIREITA  -> this.posX += velocidade;
+            case DIREITA -> this.posX += velocidade;
         }
 
         // Não permite que a imagem seja desenhada fora dos limites
@@ -290,7 +335,8 @@ public abstract class Personagem {
 
     /**
      * Aplica dano ao personagem, reduzindo sua vida.
-     * A vida não pode ficar negativa. Se a vida chegar a zero, inicia o processo de morte.
+     * A vida não pode ficar negativa. Se a vida chegar a zero, inicia o processo de
+     * morte.
      *
      * @param dano quantidade de dano a ser aplicado
      */
@@ -347,8 +393,6 @@ public abstract class Personagem {
      */
     protected Image carregarImagem(String imagem) {
         return new ImageIcon(Objects.requireNonNull(
-                getClass().getClassLoader().getResource("./" + imagem + ".png")
-        )).getImage();
+                getClass().getClassLoader().getResource("./" + imagem + ".png"))).getImage();
     }
 }
-

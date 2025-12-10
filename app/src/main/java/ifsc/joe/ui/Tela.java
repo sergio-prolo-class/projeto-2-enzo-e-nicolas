@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
 public class Tela extends JPanel {
 
     private final Set<Personagem> personagens;
-    
+
     // Contadores de baixas por tipo
     private int baixasAldeoes;
     private int baixasArqueiros;
     private int baixasCavaleiros;
-    
+
     // Timer para animação de fade-out
     private Timer timerFadeOut;
     private static final float REDUCAO_OPACIDADE = 0.1f;
@@ -100,9 +100,7 @@ public class Tela extends JPanel {
      * @param direcao direção para movimentar
      */
     public void movimentarPersonagens(Direcao direcao) {
-        this.personagens.forEach(personagem -> 
-            personagem.mover(direcao, this.getWidth(), this.getHeight())
-        );
+        this.personagens.forEach(personagem -> personagem.mover(direcao, this.getWidth(), this.getHeight()));
 
         // Depois que as coordenadas foram atualizadas é necessário repintar o JPanel
         this.repaint();
@@ -115,8 +113,8 @@ public class Tela extends JPanel {
      */
     public void movimentarAldeoes(Direcao direcao) {
         this.personagens.stream()
-            .filter(p -> p instanceof Aldeao)
-            .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
+                .filter(p -> p instanceof Aldeao)
+                .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
         this.repaint();
     }
 
@@ -127,8 +125,8 @@ public class Tela extends JPanel {
      */
     public void movimentarArqueiros(Direcao direcao) {
         this.personagens.stream()
-            .filter(p -> p instanceof Arqueiro)
-            .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
+                .filter(p -> p instanceof Arqueiro)
+                .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
         this.repaint();
     }
 
@@ -139,8 +137,8 @@ public class Tela extends JPanel {
      */
     public void movimentarCavaleiros(Direcao direcao) {
         this.personagens.stream()
-            .filter(p -> p instanceof Cavaleiro)
-            .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
+                .filter(p -> p instanceof Cavaleiro)
+                .forEach(p -> p.mover(direcao, this.getWidth(), this.getHeight()));
         this.repaint();
     }
 
@@ -151,8 +149,8 @@ public class Tela extends JPanel {
     public void atacarPersonagens() {
         // Coleta todos os atacantes (cavaleiros e arqueiros)
         List<Personagem> atacantes = this.personagens.stream()
-            .filter(p -> p instanceof Cavaleiro || p instanceof Arqueiro)
-            .collect(Collectors.toList());
+                .filter(p -> p instanceof Cavaleiro || p instanceof Arqueiro)
+                .collect(Collectors.toList());
 
         // Cada atacante aplica dano a todos os outros personagens (exceto a si mesmo)
         for (Personagem atacante : atacantes) {
@@ -169,8 +167,8 @@ public class Tela extends JPanel {
      */
     public void atacarArqueiros() {
         List<Personagem> arqueiros = this.personagens.stream()
-            .filter(p -> p instanceof Arqueiro)
-            .collect(Collectors.toList());
+                .filter(p -> p instanceof Arqueiro)
+                .collect(Collectors.toList());
 
         for (Personagem arqueiro : arqueiros) {
             arqueiro.atacar();
@@ -186,8 +184,8 @@ public class Tela extends JPanel {
      */
     public void atacarCavaleiros() {
         List<Personagem> cavaleiros = this.personagens.stream()
-            .filter(p -> p instanceof Cavaleiro)
-            .collect(Collectors.toList());
+                .filter(p -> p instanceof Cavaleiro)
+                .collect(Collectors.toList());
 
         for (Personagem cavaleiro : cavaleiros) {
             cavaleiro.atacar();
@@ -207,17 +205,17 @@ public class Tela extends JPanel {
     private void aplicarDanoAosAlvos(Personagem atacante) {
         int dano = atacante.getAtaque();
         int alcance = atacante.getAlcanceAtaque();
-        
+
         this.personagens.stream()
-            .filter(alvo -> alvo != atacante) // Não ataca a si mesmo
-            .filter(alvo -> atacante.estaNoAlcance(alvo)) // Só ataca se estiver no alcance
-            .forEach(alvo -> {
-                alvo.sofrerDano(dano);
-                System.out.println("[ATAQUE] " + atacante.getClass().getSimpleName() + 
-                    " causou " + dano + " de dano em " + alvo.getClass().getSimpleName() +
-                    " (distância: " + String.format("%.1f", atacante.calcularDistancia(alvo)) + 
-                    "px, alcance: " + alcance + "px)");
-            });
+                .filter(alvo -> alvo != atacante) // Não ataca a si mesmo
+                .filter(alvo -> atacante.estaNoAlcance(alvo)) // Só ataca se estiver no alcance
+                .forEach(alvo -> {
+                    alvo.sofrerDano(dano);
+                    System.out.println("[ATAQUE] " + atacante.getClass().getSimpleName() +
+                            " causou " + dano + " de dano em " + alvo.getClass().getSimpleName() +
+                            " (distância: " + String.format("%.1f", atacante.calcularDistancia(alvo)) +
+                            "px, alcance: " + alcance + "px)");
+                });
     }
 
     /**
@@ -227,11 +225,11 @@ public class Tela extends JPanel {
     private void removerPersonagensMortos() {
         // Verifica se há personagens morrendo
         boolean temMorrendo = this.personagens.stream().anyMatch(Personagem::estaMorrendo);
-        
+
         if (temMorrendo && (timerFadeOut == null || !timerFadeOut.isRunning())) {
             timerFadeOut = new Timer(INTERVALO_FADE, e -> {
                 boolean continuarAnimacao = false;
-                
+
                 // Reduz a opacidade de todos os personagens morrendo
                 for (Personagem p : personagens) {
                     if (p.estaMorrendo()) {
@@ -240,7 +238,7 @@ public class Tela extends JPanel {
                         }
                     }
                 }
-                
+
                 // Remove personagens que desapareceram completamente e atualiza contadores
                 Iterator<Personagem> iterator = personagens.iterator();
                 while (iterator.hasNext()) {
@@ -252,9 +250,9 @@ public class Tela extends JPanel {
                         imprimirPlacar();
                     }
                 }
-                
+
                 repaint();
-                
+
                 // Para o timer quando não houver mais personagens morrendo
                 if (!continuarAnimacao) {
                     ((Timer) e.getSource()).stop();
@@ -334,9 +332,9 @@ public class Tela extends JPanel {
      */
     public void alternarMontariaCavaleiros() {
         this.personagens.stream()
-            .filter(p -> p instanceof Cavaleiro)
-            .map(p -> (Cavaleiro) p)
-            .forEach(Cavaleiro::alternarMontado);
+                .filter(p -> p instanceof Cavaleiro)
+                .map(p -> (Cavaleiro) p)
+                .forEach(Cavaleiro::alternarMontado);
         this.repaint();
     }
 }
