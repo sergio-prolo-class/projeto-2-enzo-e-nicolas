@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+
 /**
  * Classe responsável por gerenciar a área de jogo.
  * Utiliza polimorfismo para tratar todos os personagens de forma uniforme.
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public class Tela extends JPanel {
 
     private final Set<Personagem> personagens;
+    private Point mousePos; // Posição atual do mouse
 
     // Contadores de baixas por tipo
     private int baixasAldeoes;
@@ -38,6 +42,15 @@ public class Tela extends JPanel {
         this.baixasAldeoes = 0;
         this.baixasArqueiros = 0;
         this.baixasCavaleiros = 0;
+
+        // Listener para rastrear posição do mouse para o Tooltip
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mousePos = e.getPoint();
+                repaint(); // Redesenha para atualizar tooltip
+            }
+        });
     }
 
     /**
@@ -53,8 +66,60 @@ public class Tela extends JPanel {
         // Polimorfismo: cada personagem sabe como se desenhar
         this.personagens.forEach(personagem -> personagem.desenhar(g, this));
 
+        // Desenhar Tooltip se necessário
+        desenharTooltip(g);
+
         // Liberando o contexto gráfico
         g.dispose();
+    }
+
+    /**
+     * Verifica e desenha o tooltip se o mouse estiver sobre um personagem.
+     * 
+     * @param g contexto gráfico
+     */
+    private void desenharTooltip(Graphics g) {
+        if (mousePos == null)
+            return;
+
+        for (Personagem p : personagens) {
+            // Verifica se o mouse está próximo do centro do personagem
+            double dist = Math
+                    .sqrt(Math.pow(mousePos.x - p.getCentroX(), 2) + Math.pow(mousePos.y - p.getCentroY(), 2));
+            if (dist < 30) { // Raio de detecção aproximado
+                desenharPainelTooltip(g, p, mousePos.x, mousePos.y);
+                break; // Mostra apenas um por vez
+            }
+        }
+    }
+
+    private void desenharPainelTooltip(Graphics g, Personagem p, int x, int y) {
+        java.util.List<String> linhas = new java.util.ArrayList<>();
+        linhas.add("Tipo: " + p.getClass().getSimpleName());
+        linhas.add("Vida: " + p.getVida() + "/" + p.getVidaInicial());
+        linhas.add("Ataque: " + p.getAtaque());
+        linhas.add("Velocidade: " + p.getVelocidade());
+
+        // Adiciona estado extra se for Cavaleiro
+        if (p instanceof Cavaleiro) {
+            Cavaleiro cavaleiro = (Cavaleiro) p;
+            linhas.add("Estado: " + (cavaleiro.isMontado() ? "Montado" : "Desmontado"));
+        }
+
+        int largura = 140; // Aumentei um pouco para caber "Desmontado"
+        int altura = 15 + (linhas.size() * 15);
+
+        g.setColor(new Color(0, 0, 0, 200)); // Fundo preto semi-transparente
+        g.fillRoundRect(x + 10, y + 10, largura, altura, 10, 10);
+
+        g.setColor(Color.WHITE);
+        g.drawRoundRect(x + 10, y + 10, largura, altura, 10, 10);
+
+        int textY = y + 25;
+        for (String linha : linhas) {
+            g.drawString(linha, x + 20, textY);
+            textY += 15;
+        }
     }
 
     /**
