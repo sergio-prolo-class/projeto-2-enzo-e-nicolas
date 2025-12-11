@@ -141,7 +141,6 @@ public class PainelControles {
 
     /**
      * Configura os listeners dos radio buttons para habilitar/desabilitar botões.
-     * Aldeões não podem atacar, então o botão é desabilitado quando selecionado.
      * Só cavaleiros podem montar/desmontar.
      */
     private void configurarRadioButtons() {

@@ -5,6 +5,7 @@ import ifsc.joe.interfaces.Combatente;
 import ifsc.joe.interfaces.Destrutivel;
 import ifsc.joe.interfaces.Movel;
 import ifsc.joe.interfaces.Posicionavel;
+import ifsc.joe.utils.GerenciadorAudio;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,6 +101,16 @@ public abstract class Personagem implements Movel, Combatente, Destrutivel {
      */
     public String getNomeImagemAtacando() {
         return getNomeImagem();
+    }
+
+    /**
+     * Retorna o nome do arquivo de som de ataque.
+     * Pode ser sobrescrito pelas subclasses.
+     * 
+     * @return nome do arquivo de som
+     */
+    public String getSomAtaque() {
+        return "attack.wav";
     }
 
     /**
@@ -282,6 +293,9 @@ public abstract class Personagem implements Movel, Combatente, Destrutivel {
      */
     public void atacar() {
         this.atacando = !this.atacando;
+        if (this.atacando) {
+            GerenciadorAudio.getInstancia().tocarSom(getSomAtaque());
+        }
     }
 
     /**
@@ -349,6 +363,9 @@ public abstract class Personagem implements Movel, Combatente, Destrutivel {
         this.vida = Math.max(0, this.vida - dano);
         if (this.vida <= 0) {
             this.morrendo = true;
+            GerenciadorAudio.getInstancia().tocarSom("death.wav");
+        } else {
+            GerenciadorAudio.getInstancia().tocarSom("damage.wav");
         }
     }
 

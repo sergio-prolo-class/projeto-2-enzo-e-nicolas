@@ -5,6 +5,7 @@ import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
 import ifsc.joe.domain.impl.Cavaleiro;
 import ifsc.joe.enums.Direcao;
+import ifsc.joe.utils.GerenciadorAudio;
 
 import javax.swing.*;
 import java.awt.*;
@@ -132,6 +133,7 @@ public class Tela extends JPanel {
         Aldeao aldeao = new Aldeao(x, y);
         aldeao.desenhar(super.getGraphics(), this);
         this.personagens.add(aldeao);
+        GerenciadorAudio.getInstancia().tocarSom("create_villager.wav");
     }
 
     /**
@@ -144,6 +146,7 @@ public class Tela extends JPanel {
         Arqueiro arqueiro = new Arqueiro(x, y);
         arqueiro.desenhar(super.getGraphics(), this);
         this.personagens.add(arqueiro);
+        GerenciadorAudio.getInstancia().tocarSom("create_archer.wav");
     }
 
     /**
@@ -156,6 +159,7 @@ public class Tela extends JPanel {
         Cavaleiro cavaleiro = new Cavaleiro(x, y);
         cavaleiro.desenhar(super.getGraphics(), this);
         this.personagens.add(cavaleiro);
+        GerenciadorAudio.getInstancia().tocarSom("create_knight.wav");
     }
 
     /**
