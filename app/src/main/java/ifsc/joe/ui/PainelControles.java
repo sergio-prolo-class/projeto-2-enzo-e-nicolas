@@ -36,12 +36,19 @@ public class PainelControles {
     private JButton buttonDireita;
     private JLabel logo;
 
-    // Componentes do placar de baixas
+    // Componentes do placar de baixas e recursos
     private JPanel painelPlacar;
     private JLabel labelBaixasAldeoes;
     private JLabel labelBaixasArqueiros;
     private JLabel labelBaixasCavaleiros;
     private JLabel labelTotalBaixas;
+
+    // Recursos
+    private JLabel labelComida;
+    private JLabel labelOuro;
+    private JLabel labelMadeira;
+    private JButton botaoColetar;
+
     private Timer timerAtualizarPlacar;
 
     public PainelControles() {
@@ -67,6 +74,8 @@ public class PainelControles {
         bCriaAldeao.setFocusable(false);
         bCriaArqueiro.setFocusable(false);
         bCriaCavaleiro.setFocusable(false);
+        if (botaoColetar != null)
+            botaoColetar.setFocusable(false);
 
         // Remove Tab das teclas de navegação de foco para usar como atalho
         painelPrincipal.setFocusTraversalKeysEnabled(false);
@@ -165,7 +174,6 @@ public class PainelControles {
         boolean todosSelecionado = todosRadioButton.isSelected();
 
         // Botão de ataque
-        // Botão de ataque
         atacarButton.setEnabled(true);
         atacarButton.setToolTipText("Atacar personagens no alcance");
 
@@ -260,14 +268,41 @@ public class PainelControles {
      */
     private void criarPainelPlacar() {
         painelPlacar = new JPanel();
+        // Reduzido para 4 linhas: 2 de baixas (2col) + 1 recursos + 1 botão
         painelPlacar.setLayout(new GridLayout(4, 1, 2, 2));
         painelPlacar.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(), "Baixas"));
+                BorderFactory.createEtchedBorder(), "Status"));
 
-        labelBaixasAldeoes = new JLabel("Aldeões: 0");
-        labelBaixasArqueiros = new JLabel("Arqueiros: 0");
-        labelBaixasCavaleiros = new JLabel("Cavaleiros: 0");
-        labelTotalBaixas = new JLabel("Total: 0");
+        labelBaixasAldeoes = new JLabel("Ald: 0");
+        labelBaixasArqueiros = new JLabel("Arq: 0");
+        labelBaixasCavaleiros = new JLabel("Cav: 0");
+        labelTotalBaixas = new JLabel("Tot: 0");
+
+        // Tooltips para siglas
+        labelBaixasAldeoes.setToolTipText("Baixas de Aldeões");
+        labelBaixasArqueiros.setToolTipText("Baixas de Arqueiros");
+        labelBaixasCavaleiros.setToolTipText("Baixas de Cavaleiros");
+        labelTotalBaixas.setToolTipText("Total de Baixas");
+
+        // Painel aninhado para baixas (2x2)
+        JPanel painelBaixasRow1 = new JPanel(new GridLayout(1, 2));
+        JPanel painelBaixasRow2 = new JPanel(new GridLayout(1, 2));
+
+        painelBaixasRow1.add(labelBaixasAldeoes);
+        painelBaixasRow1.add(labelBaixasArqueiros);
+        painelBaixasRow2.add(labelBaixasCavaleiros);
+        painelBaixasRow2.add(labelTotalBaixas);
+
+        // Painel aninhado para recursos (Compacto)
+        JPanel painelRecursos = new JPanel(new GridLayout(1, 3, 2, 0));
+        labelComida = new JLabel("C: 0");
+        labelOuro = new JLabel("O: 0");
+        labelMadeira = new JLabel("M: 0");
+
+        // Tooltips para explicar as siglas
+        labelComida.setToolTipText("Estoque de Comida");
+        labelOuro.setToolTipText("Estoque de Ouro");
+        labelMadeira.setToolTipText("Estoque de Madeira");
 
         // Estiliza os labels
         Font fontePlacar = new Font("SansSerif", Font.BOLD, 11);
@@ -277,10 +312,29 @@ public class PainelControles {
         labelTotalBaixas.setFont(fontePlacar);
         labelTotalBaixas.setForeground(new Color(180, 0, 0));
 
-        painelPlacar.add(labelBaixasAldeoes);
-        painelPlacar.add(labelBaixasArqueiros);
-        painelPlacar.add(labelBaixasCavaleiros);
-        painelPlacar.add(labelTotalBaixas);
+        labelComida.setFont(fontePlacar);
+        labelComida.setForeground(Constantes.Recursos.COR_COMIDA);
+        labelOuro.setFont(fontePlacar);
+        labelOuro.setForeground(new Color(180, 150, 0));
+        labelMadeira.setFont(fontePlacar);
+        labelMadeira.setForeground(Constantes.Recursos.COR_MADEIRA);
+
+        painelRecursos.add(labelComida);
+        painelRecursos.add(labelOuro);
+        painelRecursos.add(labelMadeira);
+
+        botaoColetar = new JButton("Coletar");
+        botaoColetar.setToolTipText("Coletar recursos próximos (Aldeões) [Atalho: C]");
+        botaoColetar.setFocusable(false);
+        botaoColetar.addActionListener(e -> {
+            if (getTela() != null)
+                getTela().coletarRecursosProximos();
+        });
+
+        painelPlacar.add(painelBaixasRow1);
+        painelPlacar.add(painelBaixasRow2);
+        painelPlacar.add(painelRecursos);
+        painelPlacar.add(botaoColetar);
     }
 
     /**
@@ -296,22 +350,24 @@ public class PainelControles {
      */
     private void atualizarPlacar() {
         if (labelBaixasAldeoes != null && tela != null) {
-            labelBaixasAldeoes.setText("Aldeões: " + getTela().getBaixasAldeoes());
-            labelBaixasArqueiros.setText("Arqueiros: " + getTela().getBaixasArqueiros());
-            labelBaixasCavaleiros.setText("Cavaleiros: " + getTela().getBaixasCavaleiros());
-            labelTotalBaixas.setText("Total: " + getTela().getTotalBaixas());
+            labelBaixasAldeoes.setText("Ald: " + getTela().getBaixasAldeoes());
+            labelBaixasArqueiros.setText("Arq: " + getTela().getBaixasArqueiros());
+            labelBaixasCavaleiros.setText("Cav: " + getTela().getBaixasCavaleiros());
+            labelTotalBaixas.setText("Tot: " + getTela().getTotalBaixas());
+
+            // Atualiza Recursos
+            if (labelComida != null)
+                labelComida.setText("C: " + getTela().getEstoqueComida());
+            if (labelOuro != null)
+                labelOuro.setText("O: " + getTela().getEstoqueOuro());
+            if (labelMadeira != null)
+                labelMadeira.setText("M: " + getTela().getEstoqueMadeira());
         }
     }
 
     /**
      * Configura todos os atalhos de teclado usando KeyEventDispatcher.
      * Esta abordagem intercepta TODAS as teclas globalmente, independente do foco.
-     * Atalhos disponíveis:
-     * - WASD ou Setas: Movimento
-     * - 1, 2, 3: Criar Aldeão, Arqueiro, Cavaleiro
-     * - Espaço: Atacar
-     * - Tab: Alternar filtro de tipo
-     * - M: Montar/Desmontar cavaleiros
      */
     private void configurarAtalhosDoTeclado() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
@@ -373,6 +429,11 @@ public class PainelControles {
                 // === MONTAR/DESMONTAR (M) ===
                 case KeyEvent.VK_M:
                     getTela().alternarMontariaCavaleiros();
+                    return true;
+
+                // === COLETAR (C) ===
+                case KeyEvent.VK_C:
+                    getTela().coletarRecursosProximos();
                     return true;
 
                 default:

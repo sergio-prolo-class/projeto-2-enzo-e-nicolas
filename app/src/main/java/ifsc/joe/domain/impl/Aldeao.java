@@ -2,6 +2,8 @@ package ifsc.joe.domain.impl;
 
 import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
+import ifsc.joe.domain.Recurso;
+import ifsc.joe.interfaces.Coletador;
 
 import java.awt.*;
 
@@ -10,7 +12,7 @@ import java.awt.*;
  * O Aldeão é um personagem básico com velocidade padrão.
  * Possui alcance curto de ataque (50px).
  */
-public class Aldeao extends Personagem {
+public class Aldeao extends Personagem implements Coletador {
 
     private static final String NOME_IMAGEM = "aldeao";
     private static final String NOME_IMAGEM_ATACANDO = "aldeao2";
@@ -67,5 +69,11 @@ public class Aldeao extends Personagem {
     @Override
     public Color getCorAlcance() {
         return Constantes.Aldeao.COR_AURA;
+    }
+
+    @Override
+    public void coletar(Recurso recurso) {
+        System.out.println("Aldeão coletou " + recurso.getQuantidade() + " de " + recurso.getTipo());
+        // Animação ou som específico poderia ser aqui
     }
 }

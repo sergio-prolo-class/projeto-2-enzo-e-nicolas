@@ -71,4 +71,14 @@ public final class Constantes {
         // Geral
         public static final int PADDING_BORDAS = 50; // Padding para gerar posições aleatórias
     }
+
+    public static final class Recursos {
+        private Recursos() {
+        }
+
+        public static final int QUANTIDADE_PADRAO = 10;
+        public static final Color COR_COMIDA = new Color(255, 69, 0); // Laranja avermelhado
+        public static final Color COR_OURO = new Color(255, 215, 0); // Dourado
+        public static final Color COR_MADEIRA = new Color(139, 69, 19); // Marrom madeira
+    }
 }

@@ -2,6 +2,7 @@ package ifsc.joe.ui;
 
 import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
+import ifsc.joe.domain.Recurso;
 import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
 import ifsc.joe.domain.impl.Cavaleiro;
@@ -26,6 +27,7 @@ import java.awt.event.MouseMotionAdapter;
 public class Tela extends JPanel {
 
     private final Set<Personagem> personagens;
+    private final Set<Recurso> recursos; // Set para evitar duplicatas, embora posição diferencie
     private Point mousePos; // Posição atual do mouse
 
     // Contadores de baixas por tipo
@@ -33,15 +35,28 @@ public class Tela extends JPanel {
     private int baixasArqueiros;
     private int baixasCavaleiros;
 
+    // Estoque de recursos
+    private int estoqueComida;
+    private int estoqueOuro;
+    private int estoqueMadeira;
+
     // Timer para animação de fade-out
     private Timer timerFadeOut;
 
     public Tela() {
         this.setBackground(Color.white);
         this.personagens = new HashSet<>();
+        this.recursos = new HashSet<>();
         this.baixasAldeoes = 0;
         this.baixasArqueiros = 0;
         this.baixasCavaleiros = 0;
+
+        this.estoqueComida = 0;
+        this.estoqueOuro = 0;
+        this.estoqueMadeira = 0;
+
+        // Adicionar alguns recursos iniciais para teste
+        generateInitialResources();
 
         // Listener para rastrear posição do mouse para o Tooltip
         this.addMouseMotionListener(new MouseMotionAdapter() {
@@ -61,6 +76,9 @@ public class Tela extends JPanel {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+
+        // Desenhar recursos
+        this.recursos.forEach(recurso -> recurso.desenhar(g, this));
 
         // Percorrendo a lista de personagens e pedindo para cada um se desenhar na tela
         // Polimorfismo: cada personagem sabe como se desenhar
@@ -418,6 +436,87 @@ public class Tela extends JPanel {
      * Alterna o estado de montaria de todos os cavaleiros.
      * Cavaleiros montados ficam desmontados e vice-versa.
      */
+    /**
+     * Gera recursos iniciais aleatórios no mapa.
+     */
+    private void generateInitialResources() {
+        java.util.Random rnd = new java.util.Random();
+        int padding = Constantes.Interface.PADDING_BORDAS;
+
+        // Gera 5 de cada tipo
+        for (int i = 0; i < 5; i++) {
+            criarRecursoAleatorio(ifsc.joe.enums.TipoRecurso.COMIDA, rnd, padding);
+            criarRecursoAleatorio(ifsc.joe.enums.TipoRecurso.OURO, rnd, padding);
+            criarRecursoAleatorio(ifsc.joe.enums.TipoRecurso.MADEIRA, rnd, padding);
+        }
+    }
+
+    private void criarRecursoAleatorio(ifsc.joe.enums.TipoRecurso tipo, java.util.Random rnd, int padding) {
+        // Simples geração, pode sobrepor, mas ok para este mvp
+        // Assumindo um tamanho padrão de tela inicial se getWidth for 0 ainda
+        int w = this.getWidth() > 0 ? this.getWidth() : 800;
+        int h = this.getHeight() > 0 ? this.getHeight() : 600;
+
+        int x = rnd.nextInt(Math.max(1, w - padding * 2)) + padding;
+        int y = rnd.nextInt(Math.max(1, h - padding * 2)) + padding;
+
+        this.recursos.add(new ifsc.joe.domain.Recurso(tipo, x, y));
+    }
+
+    public int getEstoqueComida() {
+        return estoqueComida;
+    }
+
+    public int getEstoqueOuro() {
+        return estoqueOuro;
+    }
+
+    public int getEstoqueMadeira() {
+        return estoqueMadeira;
+    }
+
+    public void adicionarEstoque(ifsc.joe.enums.TipoRecurso tipo, int quantidade) {
+        switch (tipo) {
+            case COMIDA -> this.estoqueComida += quantidade;
+            case OURO -> this.estoqueOuro += quantidade;
+            case MADEIRA -> this.estoqueMadeira += quantidade;
+        }
+    }
+
+    public void coletarRecursosProximos() {
+        Iterator<Recurso> itRecursos = recursos.iterator();
+        while (itRecursos.hasNext()) {
+            Recurso r = itRecursos.next();
+
+            // Procura algum aldeão proximo
+            for (Personagem p : personagens) {
+                if (p instanceof ifsc.joe.interfaces.Coletador) {
+                    double dist = Math.sqrt(Math.pow(p.getCentroX() - r.getCentroX(), 2) +
+                            Math.pow(p.getCentroY() - r.getCentroY(), 2));
+
+                    // Distância de coleta (ex: 50px)
+                    if (dist <= 50) {
+                        ((ifsc.joe.interfaces.Coletador) p).coletar(r);
+                        adicionarEstoque(r.getTipo(), r.getQuantidade());
+                        itRecursos.remove(); // Remove do mapa
+                        GerenciadorAudio.getInstancia().tocarSom("collect.wav"); // Som genérico se houver
+                        break; // Recurso coletado por um, não precisa ver outros
+                    }
+                }
+            }
+        }
+        repaint();
+    }
+
+    public void adicionarRecurso(Recurso r) {
+        this.recursos.add(r);
+        repaint();
+    }
+
+    public Set<Recurso> getRecursos() {
+        return recursos;
+    }
+
     public void alternarMontariaCavaleiros() {
         this.personagens.stream()
                 .filter(p -> p instanceof Cavaleiro)
