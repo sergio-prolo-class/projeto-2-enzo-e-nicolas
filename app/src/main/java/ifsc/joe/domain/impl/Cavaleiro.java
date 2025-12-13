@@ -1,5 +1,6 @@
 package ifsc.joe.domain.impl;
 
+import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
 
 import java.awt.*;
@@ -16,11 +17,6 @@ public class Cavaleiro extends Personagem {
     private static final String NOME_IMAGEM_MONTADO_ATACANDO = "cavaleiro2";
     private static final String NOME_IMAGEM_DESMONTADO = "guerreiro";
     private static final String NOME_IMAGEM_DESMONTADO_ATACANDO = "guerreiro2";
-    private static final int VELOCIDADE_MONTADO = 20;
-    private static final int VELOCIDADE_DESMONTADO = 10;
-    private static final int ATAQUE = 25;
-    private static final int VIDA = 150;
-    private static final int ALCANCE = 75;
 
     private boolean montado;
 
@@ -65,7 +61,7 @@ public class Cavaleiro extends Personagem {
      */
     @Override
     public int getVelocidade() {
-        return montado ? VELOCIDADE_MONTADO : VELOCIDADE_DESMONTADO;
+        return montado ? Constantes.Cavaleiro.VELOCIDADE_MONTADO : Constantes.Cavaleiro.VELOCIDADE_DESMONTADO;
     }
 
     /**
@@ -75,7 +71,7 @@ public class Cavaleiro extends Personagem {
      */
     @Override
     public int getAtaqueBase() {
-        return ATAQUE;
+        return Constantes.Cavaleiro.ATAQUE;
     }
 
     /**
@@ -85,7 +81,7 @@ public class Cavaleiro extends Personagem {
      */
     @Override
     public int getVidaInicial() {
-        return VIDA;
+        return Constantes.Cavaleiro.VIDA;
     }
 
     /**
@@ -95,7 +91,7 @@ public class Cavaleiro extends Personagem {
      */
     @Override
     public int getAlcanceAtaque() {
-        return ALCANCE;
+        return Constantes.Cavaleiro.ALCANCE;
     }
 
     /**
@@ -105,7 +101,6 @@ public class Cavaleiro extends Personagem {
      */
     @Override
     public Color getCorAlcance() {
-        return new Color(65, 105, 225, 50); // Azul real semi-transparente
+        return Constantes.Cavaleiro.COR_AURA;
     }
 }
-

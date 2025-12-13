@@ -1,5 +1,6 @@
 package ifsc.joe.ui;
 
+import ifsc.joe.config.Constantes;
 import ifsc.joe.enums.Direcao;
 
 import javax.swing.*;
@@ -179,7 +180,6 @@ public class PainelControles {
 
     /**
      * Faz os personagens atacarem baseado no tipo selecionado nos radio buttons.
-     * Nota: Aldeões não atacam, então essa opção não é chamada para eles.
      */
     private void atacarPorTipoSelecionado() {
         if (aldeaoRadioButton.isSelected()) {
@@ -224,9 +224,8 @@ public class PainelControles {
      * @return array com [posX, posY]
      */
     private int[] gerarPosicaoAleatoria() {
-        final int PADDING = 50;
-        int posX = sorteio.nextInt(Math.max(1, painelTela.getWidth() - PADDING));
-        int posY = sorteio.nextInt(Math.max(1, painelTela.getHeight() - PADDING));
+        int posX = sorteio.nextInt(Math.max(1, painelTela.getWidth() - Constantes.Interface.PADDING_BORDAS));
+        int posY = sorteio.nextInt(Math.max(1, painelTela.getHeight() - Constantes.Interface.PADDING_BORDAS));
         return new int[] { posX, posY };
     }
 

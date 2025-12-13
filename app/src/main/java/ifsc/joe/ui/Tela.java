@@ -1,5 +1,6 @@
 package ifsc.joe.ui;
 
+import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
 import ifsc.joe.domain.impl.Aldeao;
 import ifsc.joe.domain.impl.Arqueiro;
@@ -34,8 +35,6 @@ public class Tela extends JPanel {
 
     // Timer para animação de fade-out
     private Timer timerFadeOut;
-    private static final float REDUCAO_OPACIDADE = 0.1f;
-    private static final int INTERVALO_FADE = 50; // milissegundos
 
     public Tela() {
         this.setBackground(Color.white);
@@ -87,7 +86,7 @@ public class Tela extends JPanel {
             // Verifica se o mouse está próximo do centro do personagem
             double dist = Math
                     .sqrt(Math.pow(mousePos.x - p.getCentroX(), 2) + Math.pow(mousePos.y - p.getCentroY(), 2));
-            if (dist < 30) { // Raio de detecção aproximado
+            if (dist < Constantes.Interface.TOOLTIP_DISTANCIA_DETECCAO) {
                 desenharPainelTooltip(g, p, mousePos.x, mousePos.y);
                 break; // Mostra apenas um por vez
             }
@@ -107,19 +106,22 @@ public class Tela extends JPanel {
             linhas.add("Estado: " + (cavaleiro.isMontado() ? "Montado" : "Desmontado"));
         }
 
-        int largura = 140; // Aumentei um pouco para caber "Desmontado"
-        int altura = 15 + (linhas.size() * 15);
+        int largura = Constantes.Interface.TOOLTIP_LARGURA;
+        int altura = Constantes.Interface.TOOLTIP_ALTURA_LINHA
+                + (linhas.size() * Constantes.Interface.TOOLTIP_ALTURA_LINHA);
 
-        g.setColor(new Color(0, 0, 0, 200)); // Fundo preto semi-transparente
-        g.fillRoundRect(x + 10, y + 10, largura, altura, 10, 10);
+        g.setColor(Constantes.Interface.TOOLTIP_COR_FUNDO);
+        g.fillRoundRect(x + Constantes.Interface.TOOLTIP_PADDING_X, y + Constantes.Interface.TOOLTIP_PADDING_Y, largura,
+                altura, 10, 10);
 
-        g.setColor(Color.WHITE);
-        g.drawRoundRect(x + 10, y + 10, largura, altura, 10, 10);
+        g.setColor(Constantes.Interface.TOOLTIP_COR_BORDA);
+        g.drawRoundRect(x + Constantes.Interface.TOOLTIP_PADDING_X, y + Constantes.Interface.TOOLTIP_PADDING_Y, largura,
+                altura, 10, 10);
 
-        int textY = y + 25;
+        int textY = y + Constantes.Interface.TOOLTIP_MARGIN_TEXTO + 5;
         for (String linha : linhas) {
-            g.drawString(linha, x + 20, textY);
-            textY += 15;
+            g.drawString(linha, x + Constantes.Interface.TOOLTIP_MARGIN_TEXTO, textY);
+            textY += Constantes.Interface.TOOLTIP_ALTURA_LINHA;
         }
     }
 
@@ -313,13 +315,13 @@ public class Tela extends JPanel {
         boolean temMorrendo = this.personagens.stream().anyMatch(Personagem::estaMorrendo);
 
         if (temMorrendo && (timerFadeOut == null || !timerFadeOut.isRunning())) {
-            timerFadeOut = new Timer(INTERVALO_FADE, e -> {
+            timerFadeOut = new Timer(Constantes.Interface.INTERVALO_FADE, e -> {
                 boolean continuarAnimacao = false;
 
                 // Reduz a opacidade de todos os personagens morrendo
                 for (Personagem p : personagens) {
                     if (p.estaMorrendo()) {
-                        if (p.reduzirOpacidade(REDUCAO_OPACIDADE)) {
+                        if (p.reduzirOpacidade(Constantes.Interface.REDUCAO_OPACIDADE)) {
                             continuarAnimacao = true;
                         }
                     }

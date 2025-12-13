@@ -1,5 +1,6 @@
 package ifsc.joe.domain.impl;
 
+import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
 
 import java.awt.*;
@@ -13,7 +14,6 @@ public class Aldeao extends Personagem {
 
     private static final String NOME_IMAGEM = "aldeao";
     private static final String NOME_IMAGEM_ATACANDO = "aldeao2";
-    private static final int ALCANCE = 50;
 
     public Aldeao(int x, int y) {
         super(x, y);
@@ -36,7 +36,7 @@ public class Aldeao extends Personagem {
      */
     @Override
     public int getAlcanceAtaque() {
-        return ALCANCE;
+        return Constantes.Aldeao.ALCANCE;
     }
 
     /**
@@ -46,7 +46,17 @@ public class Aldeao extends Personagem {
      */
     @Override
     public int getAtaqueBase() {
-        return 5;
+        return Constantes.Aldeao.ATAQUE;
+    }
+
+    @Override
+    public int getVidaInicial() {
+        return Constantes.Aldeao.VIDA;
+    }
+
+    @Override
+    public int getVelocidade() {
+        return Constantes.Aldeao.VELOCIDADE;
     }
 
     /**
@@ -56,6 +66,6 @@ public class Aldeao extends Personagem {
      */
     @Override
     public Color getCorAlcance() {
-        return new Color(139, 90, 43, 50); // Marrom semi-transparente
+        return Constantes.Aldeao.COR_AURA;
     }
 }

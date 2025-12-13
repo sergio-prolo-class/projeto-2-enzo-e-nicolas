@@ -1,5 +1,6 @@
 package ifsc.joe.domain.impl;
 
+import ifsc.joe.config.Constantes;
 import ifsc.joe.domain.Personagem;
 
 import java.awt.*;
@@ -13,10 +14,6 @@ public class Arqueiro extends Personagem {
 
     private static final String NOME_IMAGEM = "arqueiro";
     private static final String NOME_IMAGEM_ATACANDO = "arqueiro2";
-    private static final int VELOCIDADE = 15;
-    private static final int ATAQUE = 20;
-    private static final int VIDA = 80;
-    private static final int ALCANCE = 150;
 
     public Arqueiro(int x, int y) {
         super(x, y);
@@ -39,7 +36,7 @@ public class Arqueiro extends Personagem {
      */
     @Override
     public int getVelocidade() {
-        return VELOCIDADE;
+        return Constantes.Arqueiro.VELOCIDADE;
     }
 
     /**
@@ -49,7 +46,7 @@ public class Arqueiro extends Personagem {
      */
     @Override
     public int getAtaqueBase() {
-        return ATAQUE;
+        return Constantes.Arqueiro.ATAQUE;
     }
 
     /**
@@ -59,7 +56,7 @@ public class Arqueiro extends Personagem {
      */
     @Override
     public int getVidaInicial() {
-        return VIDA;
+        return Constantes.Arqueiro.VIDA;
     }
 
     /**
@@ -69,7 +66,7 @@ public class Arqueiro extends Personagem {
      */
     @Override
     public int getAlcanceAtaque() {
-        return ALCANCE;
+        return Constantes.Arqueiro.ALCANCE;
     }
 
     /**
@@ -79,7 +76,6 @@ public class Arqueiro extends Personagem {
      */
     @Override
     public Color getCorAlcance() {
-        return new Color(34, 139, 34, 50); // Verde semi-transparente
+        return Constantes.Arqueiro.COR_AURA;
     }
 }
-
