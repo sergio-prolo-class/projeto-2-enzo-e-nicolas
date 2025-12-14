@@ -174,8 +174,13 @@ public class PainelControles {
         boolean todosSelecionado = todosRadioButton.isSelected();
 
         // Botão de ataque
-        atacarButton.setEnabled(true);
-        atacarButton.setToolTipText("Atacar personagens no alcance");
+        if (aldeaoRadioButton.isSelected()) {
+            atacarButton.setEnabled(false);
+            atacarButton.setToolTipText("Aldeão não pode atacar");
+        } else {
+            atacarButton.setEnabled(true);
+            atacarButton.setToolTipText("Atacar personagens no alcance");
+        }
 
         // Botão de montar (só para cavaleiros)
         montarButton.setEnabled(cavaleiroSelecionado || todosSelecionado);
@@ -191,7 +196,7 @@ public class PainelControles {
      */
     private void atacarPorTipoSelecionado() {
         if (aldeaoRadioButton.isSelected()) {
-            getTela().atacarAldeoes();
+            // Aldeão não ataca
         } else if (arqueiroRadioButton.isSelected()) {
             getTela().atacarArqueiros();
         } else if (cavaleiroRadioButton.isSelected()) {

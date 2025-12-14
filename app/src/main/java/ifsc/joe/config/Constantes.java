@@ -22,7 +22,7 @@ public final class Constantes {
         }
 
         public static final int VIDA = 100;
-        public static final int ATAQUE = 5;
+        public static final int ATAQUE = 0;
         public static final int VELOCIDADE = 10;
         public static final int ALCANCE = 50;
         public static final Color COR_AURA = new Color(139, 90, 43, 50); // Marrom semi-transparente

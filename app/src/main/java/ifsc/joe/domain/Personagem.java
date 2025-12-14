@@ -2,6 +2,7 @@ package ifsc.joe.domain;
 
 import ifsc.joe.enums.Direcao;
 import ifsc.joe.interfaces.Combatente;
+import ifsc.joe.interfaces.Coletador;
 import ifsc.joe.interfaces.Destrutivel;
 import ifsc.joe.interfaces.Movel;
 import ifsc.joe.interfaces.Posicionavel;
@@ -129,8 +130,8 @@ public abstract class Personagem implements Movel, Combatente, Destrutivel {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidade));
 
-        // Desenha a aura de alcance sempre para personagens que podem atacar
-        if (getAtaque() > 0) {
+        // Desenha a aura de alcance sempre para personagens que podem atacar ou coletar
+        if (getAtaque() > 0 || this instanceof Coletador) {
             desenharAuraAlcance(g2d);
         }
 
