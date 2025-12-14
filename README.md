@@ -236,6 +236,7 @@ O jogo suporta controle completo via teclado, permitindo uma experiência de jog
 | **Espaço** | Atacar | Não funciona se Aldeão estiver selecionado |
 | **Tab** | Alternar filtro de tipo | Ciclo: Todos → Aldeão → Arqueiro → Cavaleiro |
 | **M** | Montar/Desmontar | Funciona independente do tipo selecionado |
+| **C** | Coletar Recursos | Comando para Aldeões coletarem recursos próximos |
 
 #### Implementação Técnica
 
@@ -286,26 +287,74 @@ private void desabilitarFocoBotoes() {
 
 ---
 
+### 7. Sistema de Coleta de Recursos
+
+O jogo possui um sistema de economia baseado na coleta de três tipos de recursos: **Comida**, **Ouro** e **Madeira**.
+
+#### Funcionamento
+
+- Apenas o **Aldeão** possui a capacidade de coletar recursos (implementa interface `Coletador`)
+- Ao pressionar a tecla **C** ou clicar no botão **"Coletar"**, todos os aldeões buscam recursos próximos
+- A quantidade coletada é somada ao estoque global do jogador exibido no painel lateral
+- Recursos são representados por cores:
+  - **Comida**: Rosa
+  - **Ouro**: Amarelo/Dourado
+  - **Madeira**: Marrom
+
+#### Interfaces e Classes
+
+```java
+// Interface Coletador
+public interface Coletador {
+    void coletar(Recurso recurso);
+}
+
+// Em Aldeao.java
+public class Aldeao extends Personagem implements Coletador { ... }
+```
+
+---
+
+### 8. Sistema de Áudio
+
+O projeto conta com efeitos sonoros para melhorar a imersão do jogo (implementado via `GerenciadorAudio`).
+
+- **Sons Implementados**:
+  - Ataque (espada/flecha)
+  - Dano recebido
+  - Morte de personagem
+  - Coleta de recursos
+  
+---
+
 ## 🏗️ Arquitetura do Projeto
 
 ### Estrutura de Classes
 
-```
 ifsc.joe/
 ├── App.java                    # Classe principal
+├── config/
+│   └── Constantes.java         # Configurações globais
 ├── domain/
 │   ├── Personagem.java         # Classe abstrata base
+│   ├── Recurso.java            # Entidade de recurso
 │   └── impl/
 │       ├── Aldeao.java         # Implementação do Aldeão
 │       ├── Arqueiro.java       # Implementação do Arqueiro
 │       └── Cavaleiro.java      # Implementação do Cavaleiro
 ├── enums/
-│   └── Direcao.java            # Enum de direções (CIMA, BAIXO, etc.)
-└── ui/
-    ├── JanelaJogo.java         # JFrame principal
-    ├── PainelControles.java    # Painel de controles lateral
-    ├── PainelControles.form    # Layout do painel (IntelliJ Form)
-    └── Tela.java               # Área de jogo (JPanel)
+│   ├── Direcao.java            # Enum de direções
+│   └── TipoRecurso.java        # Enum de tipos (OURO, COMIDA, MADEIRA)
+├── interfaces/
+│   ├── Atacante.java           # Interface para combate
+│   └── Coletador.java          # Interface para coleta
+├── ui/
+│   ├── JanelaJogo.java         # JFrame principal
+│   ├── PainelControles.java    # Painel de controles lateral
+│   ├── PainelControles.form    # Layout do painel
+│   └── Tela.java               # Área de jogo (JPanel)
+└── utils/
+    └── GerenciadorAudio.java   # Sistema de som
 ```
 
 ### Hierarquia de Personagens
@@ -355,6 +404,7 @@ Personagem (abstract)
 | Atacar | **Espaço** |
 | Alternar tipo | **Tab** |
 | Montar/Desmontar | **M** |
+| Coletar | **C** |
 
 ### Dicas de Jogo
 
