@@ -1,4 +1,3 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/XD-ACkNn)
 
 # Projeto 2 - Jogo de Batalha
 
@@ -26,7 +25,6 @@ Cada personagem possui atributos específicos de combate:
 #### Funcionamento
 
 - Ao clicar em **Atacar**, os personagens selecionados (Cavaleiro e Arqueiro) atacam todos os outros personagens em campo
-- O **Aldeão não pode atacar** - o botão de ataque fica desabilitado quando ele está selecionado
 - O dano é aplicado através do método `sofrerDano(int dano)` que atualiza o atributo `vida`
 - A vida não pode ficar negativa (mínimo = 0)
 
